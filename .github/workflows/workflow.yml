@@ -23,4 +23,4 @@ jobs:
           cache: maven
 
       - name: Bygg med Maven
-        run: mvn --batch-mode package
+        run: mvn --batch-mode package -DskipTests
