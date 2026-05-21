@@ -58,7 +58,7 @@ public class OrderService {
         return objectMapper.toOrderResponse(order);
     }
 
-    public BigDecimal totalPrice(List<OrderItem> itemList) {
+    private BigDecimal totalPrice(List<OrderItem> itemList) {
         BigDecimal totalPrice = BigDecimal.ZERO;
         for (OrderItem orderItem : itemList) {
             totalPrice = totalPrice.add(orderItem.getPrice()
