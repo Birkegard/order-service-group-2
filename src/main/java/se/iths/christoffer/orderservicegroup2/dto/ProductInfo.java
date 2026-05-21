@@ -7,6 +7,6 @@ public record ProductInfo(
         String name,
         String description,
         BigDecimal price,
-        int stock
+        int quantity
 ) {
 }
