@@ -42,7 +42,7 @@ public class OrderService {
             OrderItem orderItem = new OrderItem();
             orderItem.setName(info.name());
             orderItem.setPrice(info.price());
-            orderItem.setQuantity(info.stock());
+            orderItem.setQuantity(info.quantity());
             orderItemList.add(orderItem);
         }
 
