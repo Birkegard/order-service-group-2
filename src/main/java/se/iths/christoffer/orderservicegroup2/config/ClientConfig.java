@@ -1,4 +1,4 @@
-package se.iths.christoffer.orderservicegroup2.client;
+package se.iths.christoffer.orderservicegroup2.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
