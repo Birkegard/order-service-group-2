@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class Order {
     private LocalDate orderDate;
     private String customerName;
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
     private List<OrderItem> orderItems;
-    private int totalPrice;
+    private BigDecimal totalPrice;
 
 }
