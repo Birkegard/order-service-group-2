@@ -12,7 +12,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ProductClient {
-    private final ClientConfig clientConfig;
     private final RestClient restClient;
 
     public List<ProductInfo> decreaseStock(List<ProductStockRequest> items) {
