@@ -1,5 +1,6 @@
 package se.iths.christoffer.orderservicegroup2.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,7 +19,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public OrderResponse createOrder(@RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
+    public OrderResponse createOrder(@Valid @RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
         return orderService.createOrder(orderRequest, jwt.getSubject());
     }
 }
