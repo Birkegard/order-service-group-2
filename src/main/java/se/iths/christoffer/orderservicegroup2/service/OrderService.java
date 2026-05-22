@@ -1,8 +1,6 @@
 package se.iths.christoffer.orderservicegroup2.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import se.iths.christoffer.orderservicegroup2.client.ProductClient;
 import se.iths.christoffer.orderservicegroup2.dto.CreateOrderRequest;
@@ -12,6 +10,7 @@ import se.iths.christoffer.orderservicegroup2.dto.ProductStockRequest;
 import se.iths.christoffer.orderservicegroup2.mapper.ObjectMapper;
 import se.iths.christoffer.orderservicegroup2.model.Order;
 import se.iths.christoffer.orderservicegroup2.model.OrderItem;
+import se.iths.christoffer.orderservicegroup2.publisher.OrderPublisher;
 import se.iths.christoffer.orderservicegroup2.repository.OrderRepository;
 
 import java.math.BigDecimal;
@@ -25,10 +24,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
     private final ProductClient client;
+    private final OrderPublisher publisher;
 
 
-    public OrderResponse createOrder(CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
-        //validering av JWT?
+    public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName) {
         List<ProductStockRequest> requestList = orderRequest.items()
                 .stream()
                 .map(item -> new ProductStockRequest(item.id(), item.quantity()))
@@ -47,15 +46,17 @@ public class OrderService {
         }
 
         Order order = new Order();
-        order.setCustomerName(jwt.getSubject());
+        order.setCustomerName(customerName);
         order.setOrderItems(orderItemList);
         order.setOrderDate(LocalDate.now());
         order.setTotalPrice(totalPrice(orderItemList));
 
         orderRepository.save(order);
 
+        OrderResponse response = objectMapper.toOrderResponse(order);
+        publisher.sendOrderConfirmation(response);
 
-        return objectMapper.toOrderResponse(order);
+        return response;
     }
 
     private BigDecimal totalPrice(List<OrderItem> itemList) {
