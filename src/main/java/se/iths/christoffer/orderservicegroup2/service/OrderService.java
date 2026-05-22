@@ -1,8 +1,6 @@
 package se.iths.christoffer.orderservicegroup2.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import se.iths.christoffer.orderservicegroup2.client.ProductClient;
 import se.iths.christoffer.orderservicegroup2.dto.CreateOrderRequest;
@@ -27,7 +25,7 @@ public class OrderService {
     private final ProductClient client;
 
 
-    public OrderResponse createOrder(CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
+    public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName) {
         //validering av JWT?
         List<ProductStockRequest> requestList = orderRequest.items()
                 .stream()
@@ -47,7 +45,7 @@ public class OrderService {
         }
 
         Order order = new Order();
-        order.setCustomerName(jwt.getSubject());
+        order.setCustomerName(customerName);
         order.setOrderItems(orderItemList);
         order.setOrderDate(LocalDate.now());
         order.setTotalPrice(totalPrice(orderItemList));

@@ -1,9 +1,32 @@
 package se.iths.christoffer.orderservicegroup2.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.iths.christoffer.orderservicegroup2.dto.CreateOrderRequest;
+import se.iths.christoffer.orderservicegroup2.dto.OrderResponse;
+import se.iths.christoffer.orderservicegroup2.publisher.OrderPublisher;
+import se.iths.christoffer.orderservicegroup2.service.OrderService;
 
 @RestController
 @RequestMapping("/order")
+@RequiredArgsConstructor
 public class OrderController {
+    private final OrderPublisher orderPublisher;
+    private final OrderService orderService;
+
+    @PostMapping
+    public String sendOrderConfirmation(@RequestBody OrderResponse response) {
+        orderPublisher.sendOrderConfirmation(response);
+        return "Order sent " + response.id();
+    }
+
+    @PostMapping
+    public OrderResponse createOrder(@RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
+        return orderService.createOrder(orderRequest, jwt.getSubject());
+    }
 }
