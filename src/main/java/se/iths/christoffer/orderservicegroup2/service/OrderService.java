@@ -10,6 +10,7 @@ import se.iths.christoffer.orderservicegroup2.dto.ProductStockRequest;
 import se.iths.christoffer.orderservicegroup2.mapper.ObjectMapper;
 import se.iths.christoffer.orderservicegroup2.model.Order;
 import se.iths.christoffer.orderservicegroup2.model.OrderItem;
+import se.iths.christoffer.orderservicegroup2.publisher.OrderPublisher;
 import se.iths.christoffer.orderservicegroup2.repository.OrderRepository;
 
 import java.math.BigDecimal;
@@ -23,10 +24,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
     private final ProductClient client;
+    private final OrderPublisher publisher;
 
 
     public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName) {
-        //validering av JWT?
         List<ProductStockRequest> requestList = orderRequest.items()
                 .stream()
                 .map(item -> new ProductStockRequest(item.id(), item.quantity()))
@@ -52,8 +53,10 @@ public class OrderService {
 
         orderRepository.save(order);
 
+        OrderResponse response = objectMapper.toOrderResponse(order);
+        publisher.sendOrderConfirmation(response);
 
-        return objectMapper.toOrderResponse(order);
+        return response;
     }
 
     private BigDecimal totalPrice(List<OrderItem> itemList) {
