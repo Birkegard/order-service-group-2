@@ -27,13 +27,13 @@ public class OrderService {
     private final OrderPublisher publisher;
 
 
-    public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName) {
+    public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName, String bearerToken) {
         List<ProductStockRequest> requestList = orderRequest.items()
                 .stream()
                 .map(item -> new ProductStockRequest(item.id(), item.quantity()))
                 .toList();
 
-        List<ProductInfo> productInfo = client.decreaseStock(requestList, customerName);
+        List<ProductInfo> productInfo = client.decreaseStock(requestList, bearerToken);
 
         List<OrderItem> orderItemList = new ArrayList<>();
 

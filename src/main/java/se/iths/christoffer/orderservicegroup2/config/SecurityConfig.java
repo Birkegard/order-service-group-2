@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/order/**").hasAnyRole("ADMIN, USER")
+                        .requestMatchers(HttpMethod.POST, "/order/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
@@ -40,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(@Value("${AUTH_SERVICE_URL:http://localhost:8080}") String authServerUrl) {
+    public JwtDecoder jwtDecoder(@Value("${auth-service.base-url:http://localhost:8080}") String authServerUrl) {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
                 .withJwkSetUri(authServerUrl + "/auth/jwks")
                 .build();

@@ -22,7 +22,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
         String bearerToken = "Bearer: " + jwt.getTokenValue();
-        orderService.createOrder(orderRequest, jwt.getSubject());
+        orderService.createOrder(orderRequest, jwt.getSubject(), bearerToken);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
