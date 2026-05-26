@@ -1,26 +1,38 @@
-name: workflow.yml
+name: Build with Maven
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ main ]
 
 jobs:
   build:
-    name: Bygg med Maven
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checka ut kod
+      - name: Checkout kod
         uses: actions/checkout@v4
 
-      - name: Sätt upp JDK 21
+      - name: Sätt upp Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
+          cache: 'maven'
 
       - name: Bygg med Maven
-        run: mvn --batch-mode package -DskipTests
+        run: mvn clean package
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: birkegard
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: birkegard/order-service-group-2:latest
