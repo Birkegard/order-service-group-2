@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.iths.christoffer.orderservicegroup2.dto.CreateOrderRequest;
+import se.iths.christoffer.orderservicegroup2.dto.OrderResponse;
 import se.iths.christoffer.orderservicegroup2.service.OrderService;
 
 @RestController
@@ -20,9 +21,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrder(@Valid @RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
-        String bearerToken = "Bearer: " + jwt.getTokenValue();
-        orderService.createOrder(orderRequest, jwt.getSubject(), bearerToken);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
+        String bearerToken = "Bearer " + jwt.getTokenValue();
+        OrderResponse response = orderService.createOrder(orderRequest, jwt.getSubject(), bearerToken);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
