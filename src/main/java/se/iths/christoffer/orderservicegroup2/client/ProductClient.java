@@ -16,7 +16,7 @@ public class ProductClient {
 
     public List<ProductInfo> decreaseStock(List<ProductStockRequest> items, String bearerToken) {
         return restClient.post()
-                .uri("/products/stock/decrease")
+                .uri("/api/products/decrease-stock")
                 .header("Authorization ", bearerToken)
                 .body(items)
                 .retrieve()
