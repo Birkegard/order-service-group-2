@@ -53,7 +53,12 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        OrderResponse response = objectMapper.toOrderResponse(order);
+        OrderResponse response = new OrderResponse(
+                order.getId(),
+                order.getCustomerName(),
+                productInfo,
+                order.getTotalPrice()
+        );
         publisher.sendOrderConfirmation(response);
 
         return response;
