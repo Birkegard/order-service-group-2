@@ -61,7 +61,7 @@ public class SecurityConfig {
             }
 
             return roles.stream()
-                    .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role))
+                    .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role))
                     .toList();
         });
 
