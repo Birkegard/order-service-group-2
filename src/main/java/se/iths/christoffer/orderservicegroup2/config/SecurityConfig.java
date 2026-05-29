@@ -11,7 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,7 +22,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
@@ -41,14 +40,14 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(@Value("${auth-service.base-url}") String authServerUrl) {
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+        return NimbusJwtDecoder
                 .withJwkSetUri(authServerUrl + "/auth/jwks")
                 .build();
 
-        jwtDecoder.setJwtValidator(
-                JwtValidators.createDefaultWithIssuer(authServerUrl));
-
-        return jwtDecoder;
+//        jwtDecoder.setJwtValidator(
+//                JwtValidators.createDefaultWithIssuer(authServerUrl));
+//
+//        return jwtDecoder;
     }
 
     @Bean
