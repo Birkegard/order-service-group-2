@@ -40,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(@Value("${auth-service.base-url:http://localhost:8080}") String authServerUrl) {
+    public JwtDecoder jwtDecoder(@Value("${auth-service.base-url}") String authServerUrl) {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
                 .withJwkSetUri(authServerUrl + "/auth/jwks")
                 .build();
