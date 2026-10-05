@@ -22,5 +22,7 @@ public class Order {
     @JoinColumn(name = "order_id")
     private List<OrderItem> orderItems;
     private BigDecimal totalPrice;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
 }
