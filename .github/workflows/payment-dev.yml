@@ -26,7 +26,7 @@ jobs:
       - name: Logga in på Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: birkegard
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Bygg och pusha Docker image
@@ -34,4 +34,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/order-service-group-2:payment-dev
+          tags: birkegard/order-service-group-2:payment-dev
