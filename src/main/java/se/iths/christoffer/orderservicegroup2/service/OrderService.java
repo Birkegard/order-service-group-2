@@ -1,15 +1,15 @@
 package se.iths.christoffer.orderservicegroup2.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.iths.christoffer.orderservicegroup2.client.ProductClient;
-import se.iths.christoffer.orderservicegroup2.dto.CreateOrderRequest;
-import se.iths.christoffer.orderservicegroup2.dto.OrderResponse;
-import se.iths.christoffer.orderservicegroup2.dto.ProductInfo;
-import se.iths.christoffer.orderservicegroup2.dto.ProductStockRequest;
+import se.iths.christoffer.orderservicegroup2.dto.*;
 import se.iths.christoffer.orderservicegroup2.mapper.ObjectMapper;
 import se.iths.christoffer.orderservicegroup2.model.Order;
 import se.iths.christoffer.orderservicegroup2.model.OrderItem;
+import se.iths.christoffer.orderservicegroup2.model.OrderStatus;
 import se.iths.christoffer.orderservicegroup2.publisher.OrderPublisher;
 import se.iths.christoffer.orderservicegroup2.repository.OrderRepository;
 
@@ -50,6 +50,7 @@ public class OrderService {
         order.setOrderItems(orderItemList);
         order.setOrderDate(LocalDate.now());
         order.setTotalPrice(totalPrice(orderItemList));
+        order.setStatus(OrderStatus.PENDING);
 
         orderRepository.save(order);
 
@@ -72,5 +73,42 @@ public class OrderService {
 
         }
         return totalPrice;
+    }
+
+    @Transactional
+    public void markOrderAsPaid(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order: " + orderId + " not found"));
+
+        if (order.getStatus() == OrderStatus.COMPLETED) {
+            return;
+        }
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Cannot mark order " + orderId + " as paid from status " + order.getStatus());
+        }
+
+        order.setStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+    }
+
+    public PaymentOrderDetailsDto getOrderForPayment(Long id, String subject) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order: " + id + " not found"));
+
+        if (!subject.equals(order.getCustomerName())) {
+            throw new AccessDeniedException("User does not own this order");
+        }
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalStateException("Order is not payable");
+        }
+
+        return new PaymentOrderDetailsDto(
+                order.getId(),
+                order.getTotalPrice(),
+                "SEK", // Assuming a default currency
+                order.getStatus()
+        );
     }
 }

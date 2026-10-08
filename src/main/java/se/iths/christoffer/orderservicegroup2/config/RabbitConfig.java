@@ -11,10 +11,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
     public static final String QUEUE = "order-queue";
+    public static final String PAYMENT_QUEUE = "payment-queue";
 
     @Bean
     public Queue queue() {
         return new Queue(QUEUE, true);
+    }
+
+    @Bean
+    public Queue paymentqueue() {
+        return new Queue(PAYMENT_QUEUE, true);
     }
 
     @Bean
