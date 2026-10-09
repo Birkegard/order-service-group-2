@@ -60,7 +60,6 @@ public class OrderService {
                 productInfo,
                 order.getTotalPrice()
         );
-        publisher.sendOrderConfirmation(response);
 
         return response;
     }
@@ -90,6 +89,7 @@ public class OrderService {
 
         order.setStatus(OrderStatus.COMPLETED);
         orderRepository.save(order);
+        publisher.sendOrderConfirmation(objectMapper.toOrderResponse(order));
     }
 
     public PaymentOrderDetailsDto getOrderForPayment(Long id, String subject) {
