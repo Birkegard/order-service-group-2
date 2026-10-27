@@ -18,6 +18,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Hanterar orderflödet, inklusive lagerkontroll, lagring och betalningsstatus.
+ */
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -26,7 +29,14 @@ public class OrderService {
     private final ProductClient client;
     private final OrderPublisher publisher;
 
-
+    /**
+     * Skapar och sparar en order efter att produktlagret har minskats av Product Service.
+     *
+     * @param orderRequest produkterna och antalen som ska beställas
+     * @param customerName kundens identifierare
+     * @param bearerToken  autentiseringstoken som vidarebefordras till Product Service
+     * @return den skapade ordern med produktinformation och totalpris
+     */
     public OrderResponse createOrder(CreateOrderRequest orderRequest, String customerName, String bearerToken) {
         List<ProductStockRequest> requestList = orderRequest.items()
                 .stream()
@@ -74,6 +84,13 @@ public class OrderService {
         return totalPrice;
     }
 
+    /**
+     * Markerar en väntande order som betald och skickar en orderbekräftelse.
+     *
+     * @param orderId ID för ordern som ska markeras som betald
+     * @throws IllegalArgumentException om ordern inte finns
+     * @throws IllegalStateException    om ordern inte har statusen {@code PENDING}
+     */
     @Transactional
     public void markOrderAsPaid(Long orderId) {
         Order order = orderRepository.findById(orderId)
@@ -92,6 +109,17 @@ public class OrderService {
         publisher.sendOrderConfirmation(objectMapper.toOrderResponse(order));
     }
 
+    /**
+     * Hämtar betalningsuppgifter för en order om den tillhör den angivna användaren
+     * och fortfarande väntar på betalning.
+     *
+     * @param id      orderns ID
+     * @param subject användaridentifieraren från JWT:ns {@code sub}-claim
+     * @return orderns ID, belopp, valuta och status
+     * @throws IllegalArgumentException om ordern inte finns
+     * @throws AccessDeniedException    om ordern tillhör en annan användare
+     * @throws IllegalStateException    om ordern inte har statusen {@code PENDING}
+     */
     public PaymentOrderDetailsDto getOrderForPayment(Long id, String subject) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order: " + id + " not found"));

@@ -8,8 +8,16 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Konfigurerar API-informationen och JWT-baserad autentisering i OpenAPI-dokumentationen.
+ */
 @Configuration
 public class OpenAPIConfig {
+    /**
+     * Skapar OpenAPI-beskrivningen för Order Service.
+     *
+     * @return OpenAPI-konfiguration med API-information och bearer-autentisering
+     */
     @Bean
     public OpenAPI openAPI() {
         String schemeName = "bearerAuth";
