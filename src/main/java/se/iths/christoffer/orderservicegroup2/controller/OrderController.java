@@ -12,12 +12,22 @@ import se.iths.christoffer.orderservicegroup2.dto.OrderResponse;
 import se.iths.christoffer.orderservicegroup2.dto.PaymentOrderDetailsDto;
 import se.iths.christoffer.orderservicegroup2.service.OrderService;
 
+/**
+ * HTTP-endpoints för att skapa ordrar och hämta orderinformation.
+ */
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
 
+    /**
+     * Skapar en order för den autentiserade användaren.
+     *
+     * @param orderRequest orderns produkter och antal
+     * @param jwt          JWT för den autentiserade användaren
+     * @return den skapade ordern med HTTP-status 201
+     */
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest orderRequest, @AuthenticationPrincipal Jwt jwt) {
         String bearerToken = "Bearer " + jwt.getTokenValue();
@@ -25,6 +35,13 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Hämtar betalningsuppgifter för en order som tillhör den autentiserade användaren.
+     *
+     * @param id  orderns ID
+     * @param jwt JWT för den autentiserade användaren
+     * @return orderns belopp, valuta och status
+     */
     @GetMapping("/{id}")
     public ResponseEntity<PaymentOrderDetailsDto> getOrderForPayment(
             @PathVariable Long id,

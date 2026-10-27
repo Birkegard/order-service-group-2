@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * JPA-entitet som representerar en order och dess orderrader.
+ */
 @Entity
 @Setter
 @Getter

@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+/**
+ * JPA-entitet som representerar en produkt på en order.
+ */
 @Entity
 @Getter
 @Setter
